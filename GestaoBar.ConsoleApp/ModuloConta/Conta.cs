@@ -16,10 +16,10 @@ namespace GestaoBar.ConsoleApp.ModuloConta
         public double TotalPedido { get; set; }
         public bool Aberta { get; set; } = true;
         public double ValorTotal { get; private set; } = 0;
-        public Conta(Garcom garcom, List<Pedido> pedido, Mesa mesa)
+        public Conta(Garcom garcom, Pedido pedido, Mesa mesa)
         {
             this._Garcom = garcom;
-            this._Pedido = pedido;
+            this.pedido = pedido;
             this._Mesa = mesa;            
         }
        

@@ -42,9 +42,9 @@ namespace GestaoBar.ConsoleApp.ModuloConta
 
             Mesa mesa = ObterMesa();
 
+            Conta conta = new Conta(garcom, pedido, mesa);
 
-
-
+            return conta;
         }
         private Pedido ObterPedido()
         {
