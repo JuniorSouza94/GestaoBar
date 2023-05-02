@@ -12,15 +12,12 @@ namespace GestaoBar.ConsoleApp
         {
             Console.Clear();
 
-            Console.WriteLine("Controle de Medicamentos 1.0\n");
+            Console.WriteLine("Gestão Financeiro Bar Da Galera 1.0\n");
 
-            Console.WriteLine("Digite 1 para Cadastrar Fornecedores");
-            Console.WriteLine("Digite 2 para Cadastrar Funcionários");
-            Console.WriteLine("Digite 3 para Cadastrar Pacientes");
-            Console.WriteLine("Digite 4 para Cadastrar Medicamentos");
-
-            Console.WriteLine("Digite 5 para Cadastrar Requisições de Entrada");
-            Console.WriteLine("Digite 6 para Cadastrar Requisições de Saída\n");
+            Console.WriteLine("Digite 1 para Gerenciar Conta");
+            Console.WriteLine("Digite 2 para Gerenciar Garçom");
+            Console.WriteLine("Digite 3 para Gerenciar Mesa");
+            Console.WriteLine("Digite 4 para Gerenciar Produto");
 
             Console.WriteLine("Digite s para Sair");
 
