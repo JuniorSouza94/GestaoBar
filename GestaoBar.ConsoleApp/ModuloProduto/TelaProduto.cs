@@ -4,16 +4,15 @@ using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloProduto
 {
-    public class TelaProduto : TelaBase
+    public class TelaProduto : TelaBase<Produto>
     {
-        public TelaProduto(RepositorioProduto repositorioProduto)
+        public TelaProduto(RepositorioProduto repositorioProduto) : base(repositorioProduto)
         {
-            this.repositorioBase = repositorioProduto;
-            nomeEntidade = "Produto";
+            NomeEntidade = "Produto";
             sufixo = "s";
         }
 
-        protected override void MostrarTabela(ArrayList produtos)
+        public override void MostrarTabela(List<Produto> produtos)
         {
             Console.WriteLine("{0,-10} | {1,-30} | {2,-20}", "Id", "Nome", "Preço");
             Console.WriteLine("-------------------------------------------------------------------------");
@@ -24,7 +23,7 @@ namespace GestaoBar.ConsoleApp.ModuloProduto
 
             Console.WriteLine("\nPressione qualquer tecla para voltar ao menu principal...");
         }
-        protected override EntidadeBase ObterRegistro()
+        public override Produto ObterRegistro()
         {
             Console.WriteLine($"\n==============NOVO PRODUTO==============\n");
 

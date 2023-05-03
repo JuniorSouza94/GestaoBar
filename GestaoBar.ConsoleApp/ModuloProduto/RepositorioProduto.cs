@@ -4,16 +4,10 @@ using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloProduto
 {
-    public class RepositorioProduto : RepositorioBase
+    public class RepositorioProduto : RepositorioBase<Produto>
     {
-        public RepositorioProduto(ArrayList listaProduto)
+        public RepositorioProduto(List<Produto> lista) : base(lista)
         {
-            this.listaRegistros = listaProduto;
-        }
-
-        public override Produto SelecionarPorId(int id)
-        {
-            return (Produto)base.SelecionarPorId(id);
         }
     }
 }

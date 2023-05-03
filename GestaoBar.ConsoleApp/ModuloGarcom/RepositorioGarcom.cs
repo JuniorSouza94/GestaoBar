@@ -1,19 +1,12 @@
-﻿
-using GestaoBar.ConsoleApp.Compartilhado;
+﻿using GestaoBar.ConsoleApp.Compartilhado;
 using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloGarcom
 {
-    public class RepositorioGarcom : RepositorioBase
+    public class RepositorioGarcom : RepositorioBase<Garcom>
     {
-        public RepositorioGarcom(ArrayList listaGarcom)
+        public RepositorioGarcom(List<Garcom> lista) : base(lista)
         {
-            this.listaRegistros = listaGarcom;
-        }
-
-        public override Garcom SelecionarPorId(int id)
-        {
-            return (Garcom)base.SelecionarPorId(id);
         }
     }
 }

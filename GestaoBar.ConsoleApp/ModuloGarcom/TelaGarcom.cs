@@ -4,29 +4,28 @@ using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloGarcom
 {
-    public class TelaGarcom : TelaBase
+    public class TelaGarcom : TelaBase<Garcom>
     {
-        public TelaGarcom(RepositorioGarcom repositorioGarcom)
+        public TelaGarcom(RepositorioGarcom repositorioGarcom) : base(repositorioGarcom)
         {
-            this.repositorioBase = repositorioGarcom;
-            nomeEntidade = "Garçom";            
+            NomeEntidade = "Garçom";
         }
 
-        protected override void MostrarTabela(ArrayList garcons)
+        public override void MostrarTabela(List<Garcom> garcons)
         {
-            Console.WriteLine("{0,-10} | {1,-30} | {2,-20} | {3,-20}", "Id", "Nome", "CPF", "Telefone");
+            Console.WriteLine("{0,-10} | {1,-20} | {2,-20} | {3,-20}", "Id", "Nome", "CPF", "Telefone");
             Console.WriteLine("-------------------------------------------------------------------------");
             foreach (Garcom garcom in garcons)
             {
-                Console.WriteLine("{0,-10} | {1,-30} | {2,-20} | {3,-20}", garcom.id, garcom.Nome, garcom.Cpf, garcom.Telefone);
+                Console.WriteLine("{0,-10} | {1,-20} | {2,-20} | {3,-20}", garcom.id, garcom.Nome, garcom.Cpf, garcom.Telefone);
             }
 
             Console.WriteLine("\nPressione qualquer tecla para voltar ao menu principal...");
         }
 
-        protected override Garcom ObterRegistro()
+        public override Garcom ObterRegistro()
         {
-            Console.WriteLine($"\n==============NOVA MESA==============\n");
+            Console.WriteLine($"\n==============NOVO GARÇOM==============\n");
 
             Console.Write("Informe o Nome: ");
             string nome = Console.ReadLine();
@@ -39,7 +38,7 @@ namespace GestaoBar.ConsoleApp.ModuloGarcom
 
             Garcom garcom = new Garcom(nome, cpf, telefone);
 
-            return garcom;            
+            return garcom;
         }
     }
 }

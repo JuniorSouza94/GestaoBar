@@ -2,27 +2,22 @@
 using GestaoBar.ConsoleApp.ModuloGarcom;
 using GestaoBar.ConsoleApp.ModuloMesa;
 using GestaoBar.ConsoleApp.ModuloPedido;
-using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloConta
 {
     public class Conta : EntidadeBase
     {
-
         public Garcom _Garcom { get; set; }
         public List<Pedido> _Pedido { get; set; }
-        public Pedido pedido { get; set; }
         public Mesa _Mesa { get; set; }
+        public bool Fechada { get; set; }
         public double TotalPedido { get; set; }
-        public bool Aberta { get; set; } = true;
-        public double ValorTotal { get; private set; } = 0;
-        public Conta(Garcom garcom, Pedido pedido, Mesa mesa)
+        public Conta(Garcom garcom, Mesa mesa)
         {
             this._Garcom = garcom;
-            this.pedido = pedido;
-            this._Mesa = mesa;            
+            this._Mesa = mesa;
         }
-       
+
         public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
         {
             Conta contaAtualizada = (Conta)registroAtualizado;
@@ -32,23 +27,22 @@ namespace GestaoBar.ConsoleApp.ModuloConta
             _Mesa = contaAtualizada._Mesa;
             TotalPedido = contaAtualizada.TotalPedido;
         }
+        public void AdicionarPedido(Pedido pedido)
+        {
+            _Pedido.Add(pedido);
+        }
+        public double CalcularTotal()
+        {
+            double total = 0;
+            foreach (Pedido pedido in _Pedido)
+            {
+                total += pedido.TotalParcial * pedido.Quantidade;
+            }
+            return total;
+        }
         public void FecharConta()
         {
-            Aberta = false;
-            ValorTotal = _Pedido.Sum(p => p.Produto.Preco * p.Quantidade);
-        }
-        public override ArrayList Validar()
-        {
-            ArrayList erros = new ArrayList();
-
-            if (_Garcom == null)
-                erros.Add("O campo \"garçom\" é obrigatório");
-            if (pedido == null)
-                erros.Add("O campo \"pedido\" é obrigatório");
-            if (_Mesa == null)
-                erros.Add("O campo \"mesa\" é obrigatório");
-
-            return erros;
+            Fechada = true;
         }
     }
 }

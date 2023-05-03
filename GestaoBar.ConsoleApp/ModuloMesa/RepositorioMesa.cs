@@ -4,16 +4,10 @@ using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloMesa
 {
-    public class RepositorioMesa : RepositorioBase
+    public class RepositorioMesa : RepositorioBase<Mesa>
     {
-        public RepositorioMesa(ArrayList listaMesa)
+        public RepositorioMesa(List<Mesa> lista) : base(lista)
         {
-            this.listaRegistros = listaMesa;
-        }
-
-        public override Mesa SelecionarPorId(int id)
-        {
-            return (Mesa)base.SelecionarPorId(id);
         }
     }
 }

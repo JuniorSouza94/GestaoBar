@@ -10,48 +10,153 @@ namespace GestaoBar.ConsoleApp
     {
         static void Main(string[] args)
         {
-            RepositorioConta _repositorioConta = new RepositorioConta(new ArrayList());
-            RepositorioGarcom _repositorioGarcom = new RepositorioGarcom(new ArrayList());
-            RepositorioProduto _repositorioProduto = new RepositorioProduto(new ArrayList());
-            RepositorioMesa _repositorioMesa = new RepositorioMesa(new ArrayList());
+            List<Produto> produtos = new List<Produto>();
+            RepositorioProduto repositorioProduto = new RepositorioProduto(produtos);
+            TelaProduto telaProduto = new TelaProduto(repositorioProduto);
 
-            TelaConta _telaConta = new TelaConta(_repositorioConta);
-            TelaGarcom _telaGarcom = new TelaGarcom(_repositorioGarcom);
-            TelaProduto _telaProduto = new TelaProduto(_repositorioProduto);
-            TelaMesa _telaMesa = new TelaMesa(_repositorioMesa);
+            List<Garcom> garcons = new List<Garcom>();
+            RepositorioGarcom repositorioGarcom = new RepositorioGarcom(garcons);
+            TelaGarcom telaGarcom = new TelaGarcom(repositorioGarcom);
+
+            List<Mesa> mesas = new List<Mesa>();
+            RepositorioMesa repositorioMesa = new RepositorioMesa(mesas);
+            TelaMesa telaMesa = new TelaMesa(repositorioMesa);
+
+            List<Conta> contas = new List<Conta>();
+            RepositorioConta repositorioConta = new RepositorioConta(contas);
+            TelaConta telaConta = new TelaConta(repositorioConta, repositorioProduto);
+
+            CadastrarRegistros(repositorioProduto, repositorioGarcom, repositorioMesa, repositorioConta);
+
+            TelaPrincipal principal = new TelaPrincipal();
+
+            while(true)
+            {
+                string opcao = principal.ApresentarMenu();
+                
+                if (opcao == "s")
+                    break;
+                if (opcao == "1")
+                {
+                    string subMenu = telaConta.ApresentarMenu();
+
+                    if (subMenu == "1")
+                    {
+                        telaConta.InserirNovoRegistro();
+                    }
+                    else if (subMenu == "2")
+                    {
+                        telaConta.VisualizarRegistros(true);
+                        Console.ReadLine();
+                    }
+                    else if (subMenu == "3")
+                    {
+                        telaConta.EditarRegistro();
+                    }
+                    else if (subMenu == "4")
+                    {
+                        telaGarcom.ExcluirRegistro();
+                    }
+                }
+                if (opcao == "2")
+                {
+                    string subMenu = telaGarcom.ApresentarMenu();
+
+                    if (subMenu == "1")
+                    {
+                        telaGarcom.InserirNovoRegistro();
+                    }
+                    else if (subMenu == "2")
+                    {
+                        telaGarcom.VisualizarRegistros(true);
+                        Console.ReadLine();
+                    }
+                    else if (subMenu == "3")
+                    {
+                        telaGarcom.EditarRegistro();
+                    }
+                    else if (subMenu == "4")
+                    {
+                        telaGarcom.ExcluirRegistro();
+                    }
+                }
+                if (opcao == "3")
+                {
+                    string subMenu = telaMesa.ApresentarMenu();
+
+                    if (subMenu == "1")
+                    {
+                        telaMesa.InserirNovoRegistro();
+                    }
+                    else if (subMenu == "2")
+                    {
+                        telaMesa.VisualizarRegistros(true);
+                        Console.ReadLine();
+                    }
+                    else if (subMenu == "3")
+                    {
+                        telaMesa.EditarRegistro();
+                    }
+                    else if (subMenu == "4")
+                    {
+                        telaMesa.ExcluirRegistro();
+                    }
+                }
+                if (opcao == "4")
+                {
+                    string subMenu = telaProduto.ApresentarMenu();
+
+                    if (subMenu == "1")
+                    {
+                        telaProduto.InserirNovoRegistro();
+                    }
+                    else if (subMenu == "2")
+                    {
+                        telaProduto.VisualizarRegistros(true);
+                        Console.ReadLine();
+                    }
+                    else if (subMenu == "3")
+                    {
+                        telaProduto.EditarRegistro();
+                    }
+                    else if (subMenu == "4")
+                    {
+                        telaProduto.ExcluirRegistro();
+                    }
+                }
+            }
         }
-        /*
-        private static void CadastrarRegistros(RepositorioConta repositorioConta,
-                                               RepositorioGarcom repositorioGarcom,
-                                               RepositorioProduto repositorioProduto,
-                                               RepositorioMesa repositorioMesa)
+        private static void CadastrarRegistros(RepositorioProduto _repositorioProduto,
+                                               RepositorioGarcom _repositorioGarcom,
+                                               RepositorioMesa _repositorioMesa)
         {
-            Produto produto1 = new Produto("Cerveja", 5.50);
-            Produto produto2 = new Produto("Porção de Fritas", 25);
-            repositorioProduto.Inserir(produto1);
-            repositorioProduto.Inserir(produto2);
+            Produto produto1 = new Produto("Refrigerante", 5.50);
+            Produto produto2 = new Produto("Porção de Fritas", 25.50);
 
-            Garcom garcom1 = new Garcom("João", "05800351905", "55549816509");
-            Garcom garcom2 = new Garcom("Pedro", "058065191905", "9196190980");
-            repositorioGarcom.Inserir(garcom1);
-            repositorioGarcom.Inserir(garcom2);
+            _repositorioProduto.Inserir(produto1);
+            _repositorioProduto.Inserir(produto2);
 
-            bool aberta1 = false;
-            bool aberta2 = true;
-            Mesa mesa1 = new Mesa();
-            mesa1.Status = aberta1;
-            Mesa mesa2 = new Mesa();
-            mesa2.Status = aberta2;
+            Garcom garcom1 = new Garcom("Felipe", "5555555555", "499889984951");
+            Garcom garcom2 = new Garcom("André", "12312312323", "981909819099");
 
-            repositorioMesa.Inserir(mesa1);
-            repositorioMesa.Inserir(mesa2);
+            _repositorioGarcom.Inserir(garcom1);
+            _repositorioGarcom.Inserir(garcom2);
 
-            Conta conta = new Conta(garcom1, 1, 1);
+            Status status1 = new Status();
+            status1 = (Status)1;
+            Mesa mesa1 = new Mesa(status1, 5);
 
+            Status status2 = new Status();
+            status2 = (Status)2;
+            Mesa mesa2 = new Mesa(status2, 10);
 
+            Status status3 = new Status();
+            status3 = (Status)1;
+            Mesa mesa3 = new Mesa(status3, 15);
 
+            _repositorioMesa.Inserir(mesa1);
+            _repositorioMesa.Inserir(mesa2);
+            _repositorioMesa.Inserir(mesa3);
         }
-        */
     }
-
 }

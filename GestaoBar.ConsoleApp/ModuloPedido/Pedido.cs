@@ -14,14 +14,9 @@ namespace GestaoBar.ConsoleApp.ModuloPedido
         {
             Pedido pedidoAtualizado = (Pedido)registroAtualizado;
 
-            Produto = pedidoAtualizado.Produto;
-            Quantidade = pedidoAtualizado.Quantidade;
-            TotalParcial = pedidoAtualizado.TotalParcial;
-        }
-
-        public override ArrayList Validar()
-        {
-            throw new NotImplementedException();
-        }
+            this.Produto = pedidoAtualizado.Produto;
+            this.Quantidade = pedidoAtualizado.Quantidade;
+            this.TotalParcial = pedidoAtualizado.TotalParcial;
+        }       
     }
 }

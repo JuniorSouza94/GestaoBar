@@ -1,15 +1,34 @@
-﻿using Microsoft.Win32;
-using System.Collections;
+﻿using System.Collections;
 
 namespace GestaoBar.ConsoleApp.Compartilhado
 {
-    public abstract class TelaBase
+    public abstract class TelaBase<Modelo> where Modelo : EntidadeBase
     {
-        public string nomeEntidade;
+        protected string NomeEntidade;
         public string sufixo;
+        protected IRepositorio<Modelo> RepositorioBase;
 
-        protected RepositorioBase repositorioBase = null;
+        public TelaBase(RepositorioBase<Modelo> repositorio)
+        {
+            RepositorioBase = repositorio;
+        }
+        public virtual string ApresentarMenu()
+        {
+            Console.Clear();
 
+            Console.WriteLine($"Cadastro de {NomeEntidade}{sufixo} \n");
+
+            Console.WriteLine($"Digite 1 para Inserir {NomeEntidade}");
+            Console.WriteLine($"Digite 2 para Visualizar {NomeEntidade}{sufixo}");
+            Console.WriteLine($"Digite 3 para Editar {NomeEntidade}{sufixo}");
+            Console.WriteLine($"Digite 4 para Excluir {NomeEntidade}{sufixo}\n");
+
+            Console.WriteLine("Digite s para Sair");
+
+            string opcao = Console.ReadLine();
+
+            return opcao;
+        }
         public void MostrarCabecalho(string titulo, string subtitulo)
         {
             Console.Clear();
@@ -32,159 +51,65 @@ namespace GestaoBar.ConsoleApp.Compartilhado
             Console.ReadLine();
         }
 
-        public virtual string ApresentarMenu()
+        public void InserirNovoRegistro()
         {
-            Console.Clear();
+            Modelo registro = ObterRegistro();
 
-            Console.WriteLine($"Cadastro de {nomeEntidade}{sufixo} \n");
+            RepositorioBase.Inserir(registro);
 
-            Console.WriteLine($"Digite 1 para Inserir {nomeEntidade}");
-            Console.WriteLine($"Digite 2 para Visualizar {nomeEntidade}{sufixo}");
-            Console.WriteLine($"Digite 3 para Editar {nomeEntidade}{sufixo}");
-            Console.WriteLine($"Digite 4 para Excluir {nomeEntidade}{sufixo}\n");
-
-            Console.WriteLine("Digite s para Sair");
-
-            string opcao = Console.ReadLine();
-
-            return opcao;
+            MostrarMensagem($"Registro de {NomeEntidade} inserido com sucesso!", ConsoleColor.Green);
         }
 
-        public virtual void InserirNovoRegistro()
+        public void VisualizarRegistros(bool mostrarCabecalho)
         {
-            MostrarCabecalho($"Cadastro de {nomeEntidade}{sufixo}", "Inserindo um novo registro...");
-
-            EntidadeBase registro = ObterRegistro();
-
-            if (TemErrosDeValidacao(registro))
-            {
-                InserirNovoRegistro(); //chamada recursiva
-
-                return;
-            }
-
-            repositorioBase.Inserir(registro);
-
-            MostrarMensagem("Registro inserido com sucesso!", ConsoleColor.Green);
-        }
-
-        /// <summary>
-        /// Método reponsável por visulizar registros das telas
-        /// </summary>
-        /// <param name="mostrarCabecalho"></param>
-        /// <returns>Caso não tenha registros, retorna falso</returns>
-        public virtual void VisualizarRegistros(bool mostrarCabecalho)
-        {
-            if (mostrarCabecalho)
-                MostrarCabecalho($"Cadastro de {nomeEntidade}{sufixo}", "Visualizando registros já cadastrados...");
-
-            ArrayList registros = repositorioBase.SelecionarTodos();
+            List<Modelo> registros = RepositorioBase.SelecionarTodos().OfType<Modelo>().ToList();
 
             if (registros.Count == 0)
             {
-                MostrarMensagem("Nenhum registro cadastrado", ConsoleColor.DarkYellow);
+                MostrarMensagem($"Nenhum {NomeEntidade.ToLower()} cadastrado", ConsoleColor.DarkYellow);
+                return;
+            }
+
+            if (mostrarCabecalho)
+            {
+                MostrarCabecalho($"Listagem de {NomeEntidade}s", "");
             }
 
             MostrarTabela(registros);
         }
 
-        public virtual void EditarRegistro()
+        public void EditarRegistro()
         {
-            MostrarCabecalho($"Cadastro de {nomeEntidade}{sufixo}", "Editando um registro já cadastrado...");
-
             VisualizarRegistros(false);
 
             Console.WriteLine();
 
-            EntidadeBase registro = EncontrarRegistro("Digite o id do registro: ");
+            Console.Write($"Digite o id do {NomeEntidade.ToLower()} a ser editado: ");
+            int id = Convert.ToInt32(Console.ReadLine());
 
-            EntidadeBase registroAtualizado = ObterRegistro();
+            Modelo registroAtualizado = ObterRegistro();
 
-            if (TemErrosDeValidacao(registroAtualizado))
-            {
-                EditarRegistro();
+            RepositorioBase.Editar(id, registroAtualizado);
 
-                return;
-            }
-
-            repositorioBase.Editar(registro, registroAtualizado);
-
-            MostrarMensagem("Registro editado com sucesso!", ConsoleColor.Green);
+            MostrarMensagem($"Registro de {NomeEntidade} editado com sucesso!", ConsoleColor.Green);
         }
 
-        public virtual void ExcluirRegistro()
+        public void ExcluirRegistro()
         {
-            MostrarCabecalho($"Cadastro de {nomeEntidade}{sufixo}", "Excluindo um registro já cadastrado...");
-
             VisualizarRegistros(false);
 
             Console.WriteLine();
 
-            EntidadeBase registro = EncontrarRegistro("Digite o id do registro: ");
+            Console.Write($"Digite o id do {NomeEntidade.ToLower()} a ser excluído: ");
+            int id = Convert.ToInt32(Console.ReadLine());
 
-            repositorioBase.Excluir(registro);
+            RepositorioBase.Excluir(id);
 
-            MostrarMensagem("Registro excluído com sucesso!", ConsoleColor.Green);
-        }      
-
-        public virtual EntidadeBase EncontrarRegistro(string textoCampo)
-        {            
-            bool idInvalido;
-            EntidadeBase registroSelecionado = null;
-
-            do
-            {
-                idInvalido = false;
-                Console.Write("\n" + textoCampo);
-                try
-                {
-                    int id = Convert.ToInt32(Console.ReadLine());
-
-                    registroSelecionado = repositorioBase.SelecionarPorId(id);
-
-                    if (registroSelecionado == null)
-                        idInvalido = true;
-                }
-                catch (FormatException)
-                {
-                    idInvalido = true;
-                }
-
-                if (idInvalido)
-                    MostrarMensagem("Id inválido, tente novamente", ConsoleColor.Red);
-
-            } while (idInvalido);
-
-            return registroSelecionado;
+            MostrarMensagem($"Registro de {NomeEntidade} excluído com sucesso!", ConsoleColor.Green);
         }
 
-        protected bool TemErrosDeValidacao(EntidadeBase registro)
-        {
-            bool temErros = false;
+        public abstract Modelo ObterRegistro();
 
-            ArrayList erros = registro.Validar();
-
-            if (erros.Count > 0)
-            {
-                temErros = true;
-                Console.ForegroundColor = ConsoleColor.Red;
-
-                foreach (string erro in erros)
-                {
-                    Console.WriteLine(erro);
-                }
-
-                Console.ResetColor();
-
-                Console.ReadLine();
-            }
-
-            return temErros;
-        }
-
-        protected abstract EntidadeBase ObterRegistro();
-
-        protected abstract void MostrarTabela(ArrayList registros);
-
+        public abstract void MostrarTabela(List<Modelo> registros);
     }
 }
