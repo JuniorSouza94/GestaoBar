@@ -6,9 +6,15 @@ namespace GestaoBar.ConsoleApp.ModuloPedido
 {
     public class Pedido : EntidadeBase
     {
+
         public Produto Produto { get; set; }
         public int Quantidade { get; set; }
         public double TotalParcial { get; set; }
+        public Pedido(Produto produto, int quantidade)
+        {
+            this.Produto = produto;
+            this.Quantidade = quantidade;
+        }
 
         public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
         {

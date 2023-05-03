@@ -12,12 +12,8 @@ namespace GestaoBar.ConsoleApp.ModuloConta
         private readonly RepositorioMesa _repositorioMesa;
         private readonly RepositorioProduto _repositorioProduto;
         private readonly RepositorioConta _repositorioConta;
-        public TelaConta(
-        RepositorioConta repositorioConta,
-        RepositorioGarcom repositorioGarcom,
-        RepositorioMesa repositorioMesa,
-        RepositorioProduto repositorioProduto
-        ) : base(repositorioConta)
+        public TelaConta(RepositorioConta repositorioConta, RepositorioGarcom repositorioGarcom,
+        RepositorioMesa repositorioMesa, RepositorioProduto repositorioProduto) : base(repositorioConta)
         {
             NomeEntidade = "Conta";
             sufixo = "s";
@@ -32,6 +28,7 @@ namespace GestaoBar.ConsoleApp.ModuloConta
             Console.WriteLine($"Cadastro de {NomeEntidade}{sufixo} \n");
 
             Console.WriteLine($"Digite 1 para Abrir Conta {NomeEntidade}");
+            Console.WriteLine($"Digite 9 para Visualizar Contas {NomeEntidade}");
             Console.WriteLine($"Digite 2 para Registrar Pedido {NomeEntidade}{sufixo}");
             Console.WriteLine($"Digite 3 para Fechar Conta {NomeEntidade}{sufixo}");
             Console.WriteLine($"Digite 4 para Visualizar Contas Abertas {NomeEntidade}{sufixo}");
@@ -43,135 +40,173 @@ namespace GestaoBar.ConsoleApp.ModuloConta
 
             return opcao;
         }
-        public void AbrirConta(Garcom garcom, Mesa mesa)
+        public override void MostrarTabela(List<Conta> contas)
         {
-            var conta = new Conta(garcom, mesa);
-            _repositorioConta.AdicionarConta(conta);
-            Console.WriteLine("Conta aberta com sucesso!");
-            Console.WriteLine();
-        }
-        public void RegistrarPedidos(Conta conta)
-        {
-            Console.WriteLine($"Registrando pedidos para mesa {conta._Mesa.id}...");
-            while (true)
+            Console.WriteLine("{0,-10} | {1,-20} | {2,-20} | {3,-20}", "Id", "Garçom", "Mesa", "Pedido");
+            Console.WriteLine("-------------------------------------------------------------------------");
+            foreach (Conta conta in contas)
             {
-                Console.WriteLine("Digite a descrição do pedido (ou 'fim' para encerrar os pedidos):");
-                string descricao = Console.ReadLine();
-                if (descricao == "fim") break;
-
-                Console.WriteLine("Digite o valor unitário do pedido:");
-                double valorUnitario = double.Parse(Console.ReadLine());
-
-                Console.WriteLine("Digite a quantidade do pedido:");
-                int quantidade = int.Parse(Console.ReadLine());
-
-                Console.WriteLine("Informe o ID do produto:");
-                int idProduto = int.Parse(Console.ReadLine());
-
-                Produto produto = _repositorioProduto.SelecionarPorId(idProduto);
-
-                Pedido pedido = new Pedido
+                foreach (Pedido pedido in conta._Pedido)
                 {
-                    Produto = produto,
-                    TotalParcial = valorUnitario,
-                    Quantidade = quantidade
-                };
-
-                conta.AdicionarPedido(pedido);
-                Console.WriteLine("Pedido registrado com sucesso!");
-                Console.WriteLine();
+                    Console.WriteLine("{0,-10} | {1,-20} | {2,-20} | {3,-20}",
+                    conta.id, conta._Garcom.Nome, conta._Mesa.id, pedido.id);
+                }
             }
         }
-        public void FecharConta(Conta conta)
+        public override Conta ObterRegistro()
         {
-            conta.FecharConta();
-            Console.WriteLine($"Conta fechada para mesa {conta._Mesa.id}. Total a pagar: R${conta.TotalPedido}");
-            Console.WriteLine();
+            Console.WriteLine($"\n==============ABRIR CONTA==============\n");
+
+            Conta conta = new Conta();
+
+            conta._Garcom = ObterGarcom();
+
+            conta._Mesa = ObterMesa();
+
+            return conta;
+        }
+        public void RegistrarPedidos()
+        {
+            Console.WriteLine($"\n==============REGISTRAR PEDIDO==============\n");
+
+            Conta conta = ObterConta();
+
+            bool adicionandoPedidos = true;
+            while (adicionandoPedidos)
+            {
+                var listaProduto = _repositorioProduto.SelecionarTodos();
+                foreach (Produto produto in listaProduto)
+                {
+                    Console.WriteLine($"{produto.id} - {produto.Nome} - R${produto.Preco}");
+                }
+
+                Console.WriteLine("Digite o número do produto que deseja adicionar ou '0' para sair:");
+                int idProduto = int.Parse(Console.ReadLine());
+                if (idProduto == 0)
+                {
+                    adicionandoPedidos = false;
+                    continue;
+                }
+
+                Produto produtoSelecionado = listaProduto.FirstOrDefault(p => p.id == idProduto);
+                if (produtoSelecionado == null)
+                {
+                    Console.WriteLine("Produto não encontrado!");
+                    continue;
+                }
+
+                Console.WriteLine("Digite a quantidade:");
+                int quantidade = int.Parse(Console.ReadLine());
+
+                Pedido novoPedido = new Pedido(produtoSelecionado, quantidade);
+
+                conta.AdicionarPedido(novoPedido);
+
+                Console.WriteLine($"Pedido de {quantidade} {produtoSelecionado.Nome} adicionado à conta da mesa {conta._Mesa.id}!");
+            }
+            double totalConta = conta.CalcularTotal();
+            Console.WriteLine($"Total da conta da mesa {conta._Mesa.id}: R${totalConta}\n");
+
+            Console.WriteLine("Deseja fechar a conta? (S/N)");
+            string resposta = Console.ReadLine().ToUpper();
+            if (resposta == "S")
+            {
+                conta.FecharConta();
+                _repositorioConta.Editar(conta.id, conta);
+                Console.WriteLine("Conta fechada com sucesso!");
+            }
+
+        }
+        public double FecharConta()
+        {
+            Conta conta = ObterConta();
+            double totalConta = CalcularValorTotalConta(conta);
+            Console.WriteLine($"Total da conta da mesa {conta._Mesa.id}: R${totalConta}\n");
+
+            Console.WriteLine("Deseja fechar a conta? (S/N)");
+            string resposta = Console.ReadLine().ToUpper();
+            if (resposta == "S")
+            {
+                _repositorioConta.Excluir(conta.id);
+                Console.WriteLine($"Conta da mesa {conta._Mesa.id} fechada com sucesso!");
+                return totalConta;
+            }
+            else
+            {
+                Console.WriteLine($"Conta da mesa {conta._Mesa.id} não foi fechada.");
+                return 0;
+            }
         }
         public void VisualizarContasAbertas()
         {
-            List<Conta> contasAbertas = _repositorioConta.ObterContasAbertas();
-            Console.WriteLine($"Contas Abertas: {contasAbertas.Count}\n");
-            foreach (Conta conta in contasAbertas)
+            Console.WriteLine($"Contas abertas:");
+
+            List<Conta> contas = _repositorioConta.SelecionarTodos().Where(c => !c.Fechada).ToList();
+
+            if (contas.Count == 0)
             {
-                Console.WriteLine($"Mesa {conta._Mesa.id} - Garçom: {conta._Garcom.Nome} - Valor total: R${conta.TotalPedido}");
+                Console.WriteLine($"Nenhuma conta aberta no momento.");
+                return;
             }
-            Console.WriteLine();
+
+            MostrarTabela(contas);
         }
         public void VisualizarTotalFaturamentoDia()
         {
-            double faturamento = _repositorioConta.CalcularTotalFaturadoDia();
-            Console.WriteLine($"Faturamento do dia: R${faturamento}");
-            Console.WriteLine();
-        }
-        public bool ExecutarOpcao(string opcao)
-        {
-            switch (opcao)
+            Console.WriteLine($"\n==============FATURAMENTO DO DIA==============\n");
+
+            double totalFaturamento = 0;
+
+            List<Conta> contas = _repositorioConta.SelecionarTodos();
+
+            foreach (Conta conta in contas)
             {
-                case "1":
-                    Console.Clear();
-                    Console.WriteLine("Digite o ID do garçom:");
-                    int idGarcom = int.Parse(Console.ReadLine());
-                    Garcom garcom = _repositorioGarcom.SelecionarPorId(idGarcom);
-
-                    Console.WriteLine("Digite o ID da mesa:");
-                    int idMesa = int.Parse(Console.ReadLine());
-                    Mesa mesa = _repositorioMesa.SelecionarPorId(idMesa);
-
-                    AbrirConta(garcom, mesa);
-                    Console.ReadLine();
-                    return true;
-
-                case "2":
-                    Console.Clear();
-                    Console.WriteLine("Digite o ID da conta:");
-                    int idConta = int.Parse(Console.ReadLine());
-                    Conta conta = _repositorioConta.SelecionarPorId(idConta);
-
-                    RegistrarPedidos(conta);
-                    Console.ReadLine();
-                    return true;
-
-                case "3":
-                    Console.Clear();
-                    Console.WriteLine("Digite o ID da conta:");
-                    int idContaFechar = int.Parse(Console.ReadLine());
-                    Conta contaFechar = _repositorioConta.SelecionarPorId(idContaFechar);
-
-                    FecharConta(contaFechar);
-                    Console.ReadLine();
-                    return true;
-
-                case "4":
-                    Console.Clear();
-                    VisualizarContasAbertas();
-                    Console.ReadLine();
-                    return true;
-
-                case "5":
-                    Console.Clear();
-                    VisualizarTotalFaturamentoDia();
-                    Console.ReadLine();
-                    return true;
-
-                case "s":
-                    return false;
-
-                default:
-                    Console.WriteLine("Opção inválida, tente novamente.");
-                    Console.ReadLine();
-                    return true;
+                totalFaturamento += CalcularValorTotalConta(conta);
             }
+
+            MostrarTotalFaturamento(totalFaturamento);
         }
 
-        public override Conta ObterRegistro()
+
+        private Garcom ObterGarcom()
         {
-            throw new NotImplementedException();
+            Console.Write("Digite o id do Garçom: ");
+            int idGarcom = int.Parse(Console.ReadLine());
+
+            Garcom garcom = _repositorioGarcom.SelecionarPorId(idGarcom);
+
+            return garcom;
         }
-        public override void MostrarTabela(List<Conta> registros)
+        private Mesa ObterMesa()
         {
-            throw new NotImplementedException();
+            Console.Write("Digite o id da Mesa: ");
+            int idMesa = int.Parse(Console.ReadLine());
+
+            Mesa mesa = _repositorioMesa.SelecionarPorId(idMesa);
+
+            return mesa;
+        }
+        private Conta ObterConta()
+        {
+            Console.Write("Digite o id da Conta: ");
+            int idConta = int.Parse(Console.ReadLine());
+
+            Conta conta = _repositorioConta.SelecionarPorId(idConta);
+
+            return conta;
+        }
+        private double CalcularValorTotalConta(Conta conta)
+        {
+            double totalConta = 0;
+            foreach (Pedido pedido in conta._Pedido)
+            {
+                totalConta += pedido.Produto.Preco * pedido.Quantidade;
+            }
+            return totalConta;
+        }
+        private void MostrarTotalFaturamento(double totalFaturamento)
+        {
+            Console.WriteLine($"Total: R${totalFaturamento:0.00}\n");
         }
     }
 }
-// "TelaConta.ExecutarOpcao(string)": não encontrado nenhum método adequado para subtituição

@@ -10,8 +10,12 @@ namespace GestaoBar.ConsoleApp.ModuloConta
         public Garcom _Garcom { get; set; }
         public List<Pedido> _Pedido { get; set; }
         public Mesa _Mesa { get; set; }
-        public bool Fechada { get; set; }
+        public bool Fechada { get; set; } = false;
         public double TotalPedido { get; set; }
+        public Conta()
+        {
+
+        }
         public Conta(Garcom garcom, Mesa mesa)
         {
             this._Garcom = garcom;

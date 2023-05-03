@@ -24,7 +24,8 @@ namespace GestaoBar.ConsoleApp
 
             List<Conta> contas = new List<Conta>();
             RepositorioConta repositorioConta = new RepositorioConta(contas);
-            TelaConta telaConta = new TelaConta(repositorioConta, repositorioProduto);
+            TelaConta telaConta = new TelaConta(repositorioConta, repositorioGarcom,
+            repositorioMesa, repositorioProduto);
 
             CadastrarRegistros(repositorioProduto, repositorioGarcom, repositorioMesa, repositorioConta);
 
@@ -46,16 +47,24 @@ namespace GestaoBar.ConsoleApp
                     }
                     else if (subMenu == "2")
                     {
-                        telaConta.VisualizarRegistros(true);
-                        Console.ReadLine();
+                        telaConta.RegistrarPedidos();
                     }
                     else if (subMenu == "3")
                     {
-                        telaConta.EditarRegistro();
+                        telaConta.FecharConta();
                     }
                     else if (subMenu == "4")
                     {
-                        telaGarcom.ExcluirRegistro();
+                        telaConta.VisualizarContasAbertas();
+                    }
+                    else if (subMenu == "5")
+                    {
+                        telaConta.VisualizarTotalFaturamentoDia();
+                    }
+                    else if (subMenu == "9")
+                    {
+                        telaConta.VisualizarRegistros(true);
+                        Console.ReadLine();
                     }
                 }
                 if (opcao == "2")
@@ -128,7 +137,8 @@ namespace GestaoBar.ConsoleApp
         }
         private static void CadastrarRegistros(RepositorioProduto _repositorioProduto,
                                                RepositorioGarcom _repositorioGarcom,
-                                               RepositorioMesa _repositorioMesa)
+                                               RepositorioMesa _repositorioMesa,
+                                               RepositorioConta _repositorioConta)
         {
             Produto produto1 = new Produto("Refrigerante", 5.50);
             Produto produto2 = new Produto("Porção de Fritas", 25.50);
@@ -157,6 +167,14 @@ namespace GestaoBar.ConsoleApp
             _repositorioMesa.Inserir(mesa1);
             _repositorioMesa.Inserir(mesa2);
             _repositorioMesa.Inserir(mesa3);
+
+            Conta conta1 = new Conta(garcom1, mesa1);
+            Conta conta2 = new Conta(garcom2, mesa2);
+            Conta conta3 = new Conta(garcom1, mesa3);
+
+            _repositorioConta.Inserir(conta1);
+            _repositorioConta.Inserir(conta2);
+            _repositorioConta.Inserir(conta3);
         }
     }
 }

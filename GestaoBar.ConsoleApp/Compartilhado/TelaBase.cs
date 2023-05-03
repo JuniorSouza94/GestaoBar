@@ -12,6 +12,26 @@ namespace GestaoBar.ConsoleApp.Compartilhado
         {
             RepositorioBase = repositorio;
         }
+        public void MostrarCabecalho(string titulo, string subtitulo)
+        {
+            Console.Clear();
+
+            Console.WriteLine(titulo + "\n");
+
+            Console.WriteLine(subtitulo + "\n");
+        }
+        public void MostrarMensagem(string mensagem, ConsoleColor cor)
+        {
+            Console.WriteLine();
+
+            Console.ForegroundColor = cor;
+
+            Console.WriteLine(mensagem);
+
+            Console.ResetColor();
+
+            Console.ReadLine();
+        }
         public virtual string ApresentarMenu()
         {
             Console.Clear();
@@ -29,27 +49,7 @@ namespace GestaoBar.ConsoleApp.Compartilhado
 
             return opcao;
         }
-        public void MostrarCabecalho(string titulo, string subtitulo)
-        {
-            Console.Clear();
 
-            Console.WriteLine(titulo + "\n");
-
-            Console.WriteLine(subtitulo + "\n");
-        }
-
-        public void MostrarMensagem(string mensagem, ConsoleColor cor)
-        {
-            Console.WriteLine();
-
-            Console.ForegroundColor = cor;
-
-            Console.WriteLine(mensagem);
-
-            Console.ResetColor();
-
-            Console.ReadLine();
-        }
 
         public void InserirNovoRegistro()
         {
