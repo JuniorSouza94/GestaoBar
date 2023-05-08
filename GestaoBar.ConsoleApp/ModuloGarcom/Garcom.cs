@@ -2,24 +2,30 @@
 
 namespace GestaoBar.ConsoleApp.ModuloGarcom
 {
-    public class Garcom : EntidadeBase
-    {        
-        public string Nome { get; set; }
-        public string Cpf { get; set; }
-        public string Telefone { get; set; }
-        public Garcom(string nome, string cpf, string telefone)
-        {
-            this.Nome = nome;
-            this.Cpf = cpf;
-            this.Telefone = telefone;
-        }
-        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
-        {
-            Garcom garcomAtualizado = (Garcom)registroAtualizado;
+    public class Garcom : EntidadeBase<Garcom>
+    {
+        public string nome { get; set; }
 
-            Nome = garcomAtualizado.Nome;
-            Cpf = garcomAtualizado.Cpf;
-            Telefone = garcomAtualizado.Telefone;
+        public Garcom(string nomeGarcom)
+        {
+            this.nome = nomeGarcom;
+        }
+
+        public override void AtualizarInformacoes(Garcom garcomAtualizado)
+        {
+            this.nome = garcomAtualizado.nome;
+        }
+
+        public override ArrayList Validar()
+        {
+            ArrayList erros = new ArrayList();
+
+            if (string.IsNullOrEmpty(nome.Trim()))
+            {
+                erros.Add("O campo \"Nome\" é obrigatório");
+            }
+
+            return erros;
         }
     }
 }

@@ -1,27 +1,40 @@
-﻿using GestaoBar.ConsoleApp.Compartilhado;
-using GestaoBar.ConsoleApp.ModuloPedido;
-using System.Collections;
-
+﻿
 namespace GestaoBar.ConsoleApp.ModuloMesa
 {
-    public class Mesa : EntidadeBase
+    public class Mesa : EntidadeBase<Mesa>
     {
+        public string numero;
+        public bool ocupada;
 
-        //CRUD        
-        public Status Status { get; set; }
-        public int Capacidade { get; set; }
-        public Mesa(Status status, int capacidade)
+        public Mesa(string numeroMesa)
         {
-            this.Status = status;
-            this.Capacidade = capacidade;
+            numero = numeroMesa;
         }
-        
-        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
-        {
-            Mesa mesaAtualizada = (Mesa)registroAtualizado;
 
-            Status = mesaAtualizada.Status;
-            Capacidade = mesaAtualizada.Capacidade;
-        }      
+        public override void AtualizarInformacoes(Mesa mesaAtualizada)
+        {
+            this.numero = mesaAtualizada.numero;
+        }
+
+        public override ArrayList Validar()
+        {
+            ArrayList erros = new ArrayList();
+
+            if (string.IsNullOrEmpty(numero.Trim()))
+            {
+                erros.Add("O campo \"Número da Mesa\" é obrigatorio");
+            }
+            return erros;
+        }
+
+        public void Desocupar()
+        {
+            ocupada = false;
+        }
+
+        public void Ocupar()
+        {
+            ocupada = true;
+        }
     }
 }

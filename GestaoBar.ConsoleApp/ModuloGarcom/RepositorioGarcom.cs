@@ -5,8 +5,9 @@ namespace GestaoBar.ConsoleApp.ModuloGarcom
 {
     public class RepositorioGarcom : RepositorioBase<Garcom>
     {
-        public RepositorioGarcom(List<Garcom> lista) : base(lista)
+        public RepositorioGarcom(List<Garcom> listaGarcom)
         {
+            this._listaRegistros = listaGarcom;
         }
     }
 }

@@ -4,41 +4,30 @@ using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloGarcom
 {
-    public class TelaGarcom : TelaBase<Garcom>
+    public class TelaGarcom : TelaBase<RepositorioGarcom, Garcom>
     {
-        public TelaGarcom(RepositorioGarcom repositorioGarcom) : base(repositorioGarcom)
+        public TelaGarcom(RepositorioGarcom repositorioGarcom)
         {
-            NomeEntidade = "Garçom";
+            this.repositorioBase = repositorioGarcom;
+            nomeEntidade = "Garçom";
+            sufixo = "s";
         }
 
-        public override void MostrarTabela(List<Garcom> garcons)
+        protected override void MostrarTabela(List<Garcom> registros)
         {
-            Console.WriteLine("{0,-10} | {1,-20} | {2,-20} | {3,-20}", "Id", "Nome", "CPF", "Telefone");
-            Console.WriteLine("-------------------------------------------------------------------------");
-            foreach (Garcom garcom in garcons)
+            foreach (Garcom garcom in registros)
             {
-                Console.WriteLine("{0,-10} | {1,-20} | {2,-20} | {3,-20}", garcom.id, garcom.Nome, garcom.Cpf, garcom.Telefone);
+                Console.Write(garcom.id + ", " + garcom.nome);
+                Console.WriteLine();
             }
-
-            Console.WriteLine("\nPressione qualquer tecla para voltar ao menu principal...");
         }
 
-        public override Garcom ObterRegistro()
+        protected override Garcom ObterRegistro()
         {
-            Console.WriteLine($"\n==============NOVO GARÇOM==============\n");
+            Console.WriteLine("Digite o nome do garçom: ");
+            string nomeGarcom = Console.ReadLine();
 
-            Console.Write("Informe o Nome: ");
-            string nome = Console.ReadLine();
-
-            Console.Write("Informe o CPF: ");
-            string cpf = Console.ReadLine();
-
-            Console.Write("Informe o Telefone: ");
-            string telefone = Console.ReadLine();
-
-            Garcom garcom = new Garcom(nome, cpf, telefone);
-
-            return garcom;
+            return new Garcom(nomeGarcom);
         }
     }
 }

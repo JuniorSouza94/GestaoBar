@@ -5,29 +5,19 @@ namespace GestaoBar.ConsoleApp.ModuloConta
 {
     public class RepositorioConta : RepositorioBase<Conta>
     {
-        public RepositorioConta(List<Conta> lista) : base(lista)
+        public RepositorioConta(List<Conta> listaContas)
         {
+            _listaRegistros = listaContas;
         }
-        public void AdicionarConta(Conta conta)
+
+        public List<Conta> SelecionarContasEmAberto()
         {
-            _listaRegistros.Add(conta);
+            return _listaRegistros.FindAll(conta => conta.estaAberta);
         }
-        public void RemoverConta(Conta conta)
+
+        public List<Conta> SelecionarContasFechadas(DateTime data)
         {
-            _listaRegistros.Remove(conta);
-        }
-        public List<Conta> ObterContasAbertas()
-        {
-            return _listaRegistros.Where(c => !c.Fechada).ToList();
-        }
-        public double CalcularTotalFaturadoDia()
-        {
-            double total = 0;
-            foreach (Conta conta in _listaRegistros.Where(c => c.Fechada))
-            {
-                total += conta.CalcularTotal();
-            }
-            return total;
+            return _listaRegistros.FindAll(c => c.estaAberta == false && c.data.Date == data.Date);
         }
     }
 }

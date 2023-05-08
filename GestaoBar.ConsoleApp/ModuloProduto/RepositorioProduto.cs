@@ -6,8 +6,9 @@ namespace GestaoBar.ConsoleApp.ModuloProduto
 {
     public class RepositorioProduto : RepositorioBase<Produto>
     {
-        public RepositorioProduto(List<Produto> lista) : base(lista)
+        public RepositorioProduto(List<Produto> listaProduto)
         {
+            this._listaRegistros = listaProduto;
         }
     }
 }

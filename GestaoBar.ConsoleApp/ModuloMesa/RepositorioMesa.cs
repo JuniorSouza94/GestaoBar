@@ -6,8 +6,9 @@ namespace GestaoBar.ConsoleApp.ModuloMesa
 {
     public class RepositorioMesa : RepositorioBase<Mesa>
     {
-        public RepositorioMesa(List<Mesa> lista) : base(lista)
+        public RepositorioMesa(List<Mesa> listaMesa)
         {
+            this._listaRegistros = listaMesa;
         }
     }
 }

@@ -4,41 +4,35 @@ using System.Collections;
 
 namespace GestaoBar.ConsoleApp.ModuloProduto
 {
-    public class TelaProduto : TelaBase<Produto>
+    public class TelaProduto : TelaBase<RepositorioProduto, Produto>
     {
-        public TelaProduto(RepositorioProduto repositorioProduto) : base(repositorioProduto)
+        public TelaProduto(RepositorioProduto repositorioProduto)
         {
-            NomeEntidade = "Produto";
+            this.repositorioBase = repositorioProduto;
+            nomeEntidade = "Produto";
             sufixo = "s";
         }
 
-        public override void MostrarTabela(List<Produto> produtos)
+        protected override void MostrarTabela(List<Produto> registros)
         {
-            Console.WriteLine("{0,-10} | {1,-30} | {2,-20}", "Id", "Nome", "Preço");
-            Console.WriteLine("-------------------------------------------------------------------------");
-            foreach (Produto produto in produtos)
+            foreach (Produto produto in registros)
             {
-                Console.WriteLine("{0,-10} | {1,-30} | {2,-20}", produto.id, produto.Nome, produto.Preco);
+                Console.Write(produto.id + ", " + produto.nome + ", " + produto.preco);
+                Console.WriteLine();
             }
-
-            Console.WriteLine("\nPressione qualquer tecla para voltar ao menu principal...");
         }
-        public override Produto ObterRegistro()
+
+        protected override Produto ObterRegistro()
         {
-            Console.WriteLine($"\n==============NOVO PRODUTO==============\n");
+            Console.WriteLine("Digite o nome do produto");
+            string nomeProduto = Console.ReadLine();
 
-            Console.Write("Informe o Nome: ");
-            string nome = Console.ReadLine();
+            Console.WriteLine("Digite o valor do produto ");
+            decimal precoProduto = Convert.ToDecimal(Console.ReadLine());
 
-            Console.Write("Informe o Preço: ");
-            double preco = double.Parse(Console.ReadLine());
-
-            Produto produto = new Produto(nome, preco);
-            
-            Console.WriteLine("\nPressione qualquer tecla para voltar ao menu principal...");
-
-            return produto;
+            return new Produto(nomeProduto, precoProduto);
         }
+
 
     }
 }

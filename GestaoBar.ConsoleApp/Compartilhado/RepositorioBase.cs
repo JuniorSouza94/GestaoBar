@@ -1,15 +1,12 @@
 ﻿namespace GestaoBar.ConsoleApp.Compartilhado
 {
-    public abstract class RepositorioBase<TipoDeRegistro> : IRepositorio<TipoDeRegistro> where TipoDeRegistro : EntidadeBase
+    public abstract class RepositorioBase<TEntidade>
+        where TEntidade : EntidadeBase<TEntidade>
     {
-        protected List<TipoDeRegistro> _listaRegistros;
+        protected List<TEntidade> _listaRegistros;
         protected int contadorRegistros = 0;
 
-        public RepositorioBase(List<TipoDeRegistro> lista)
-        {
-            _listaRegistros = lista;
-        }
-        public virtual void Inserir(TipoDeRegistro registro)
+        public virtual void Inserir(TEntidade registro)
         {
             contadorRegistros++;
 
@@ -17,33 +14,37 @@
 
             _listaRegistros.Add(registro);
         }
-        public virtual void Editar(int id, TipoDeRegistro registroAtualizado)
+
+        public virtual void Editar(int id, TEntidade registroAtualizado)
         {
-            TipoDeRegistro registroSelecionado = SelecionarPorId(id);
+            TEntidade registroSelecionado = SelecionarPorId(id);
 
             registroSelecionado.AtualizarInformacoes(registroAtualizado);
         }
+
+        public virtual void Editar(TEntidade registroSelecionado, TEntidade registroAtualizado)
+        {
+            registroSelecionado.AtualizarInformacoes(registroAtualizado);
+        }
+
         public virtual void Excluir(int id)
         {
-            TipoDeRegistro registroSelecionado = SelecionarPorId(id);
+            TEntidade registroSelecionado = SelecionarPorId(id);
 
             _listaRegistros.Remove(registroSelecionado);
         }
-        public virtual TipoDeRegistro SelecionarPorId(int id)
-        {
-            TipoDeRegistro registroSelecionado = null;
 
-            foreach (TipoDeRegistro registro in _listaRegistros)
-            {
-                if (registro.id == id)
-                {
-                    registroSelecionado = registro;
-                    break;
-                }
-            }
-            return registroSelecionado;
+        public virtual void Excluir(TEntidade registroSelecionado)
+        {
+            _listaRegistros.Remove(registroSelecionado);
         }
-        public List<TipoDeRegistro> SelecionarTodos()
+
+        public virtual TEntidade SelecionarPorId(int id)
+        {
+            return _listaRegistros.Find(registro => registro.id == id);
+        }
+
+        public virtual List<TEntidade> SelecionarTodos()
         {
             return _listaRegistros;
         }

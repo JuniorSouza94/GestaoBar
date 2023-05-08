@@ -1,52 +1,76 @@
 ﻿using GestaoBar.ConsoleApp.Compartilhado;
 using GestaoBar.ConsoleApp.ModuloGarcom;
 using GestaoBar.ConsoleApp.ModuloMesa;
-using GestaoBar.ConsoleApp.ModuloPedido;
+using GestaoBar.ConsoleApp.ModuloProduto;
 
 namespace GestaoBar.ConsoleApp.ModuloConta
 {
-    public class Conta : EntidadeBase
+    public class Conta : EntidadeBase<Conta>
     {
-        public Garcom _Garcom { get; set; }
-        public List<Pedido> _Pedido { get; set; }
-        public Mesa _Mesa { get; set; }
-        public bool Fechada { get; set; } = false;
-        public double TotalPedido { get; set; }
-        public Conta()
-        {
+        public Mesa mesa;
+        public List<Pedido> pedidos;
+        public Garcom garcom;
+        public bool estaAberta;
 
-        }
-        public Conta(Garcom garcom, Mesa mesa)
+        public DateTime data;
+
+        public Conta(Mesa m, Garcom g, DateTime dataAbertura)
         {
-            this._Garcom = garcom;
-            this._Mesa = mesa;
+            mesa = m;
+            garcom = g;
+            pedidos = new List<Pedido>();
+            data = dataAbertura;
+
+            Abrir();
         }
 
-        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
+        public void RegistrarPedido(Produto produto, int quantidadeEscolhida)
         {
-            Conta contaAtualizada = (Conta)registroAtualizado;
+            Pedido novoPedido = new Pedido(produto, quantidadeEscolhida);
 
-            _Garcom = contaAtualizada._Garcom;
-            _Pedido = contaAtualizada._Pedido;
-            _Mesa = contaAtualizada._Mesa;
-            TotalPedido = contaAtualizada.TotalPedido;
+            pedidos.Add(novoPedido);
         }
-        public void AdicionarPedido(Pedido pedido)
+
+        public decimal CalcularValorTotal()
         {
-            _Pedido.Add(pedido);
+            return pedidos.Sum(p => p.CalcularTotalParcial());
         }
-        public double CalcularTotal()
+
+        public override void AtualizarInformacoes(Conta contaAtualizada)
         {
-            double total = 0;
-            foreach (Pedido pedido in _Pedido)
+            garcom = contaAtualizada.garcom;
+            mesa = contaAtualizada.mesa;
+        }
+
+        public override ArrayList Validar()
+        {
+            ArrayList erros = new ArrayList();
+
+            if (garcom == null)
             {
-                total += pedido.TotalParcial * pedido.Quantidade;
+                erros.Add("O campo \"Garçom\" é obrigatorio");
             }
-            return total;
+
+            if (mesa == null)
+            {
+                erros.Add("O campo \"Mesa\" é obrigatorio");
+            }
+
+            return erros;
         }
-        public void FecharConta()
+
+        private void Abrir()
         {
-            Fechada = true;
+            estaAberta = true;
+            mesa.Ocupar();
         }
+
+        public void Fechar()
+        {
+            estaAberta = false;
+            mesa.Desocupar();
+        }
+
+
     }
 }

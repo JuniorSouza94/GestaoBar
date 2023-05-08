@@ -1,25 +1,37 @@
-﻿using GestaoBar.ConsoleApp.Compartilhado;
-using System.Collections;
-
+﻿
 namespace GestaoBar.ConsoleApp.ModuloProduto
 {
-    public class Produto : EntidadeBase
+    public class Produto : EntidadeBase<Produto>
     {
-        //CRUD
-        public string Nome { get; set; }
-        public double Preco { get; set; }
-        public Produto(string nome, double preco)
+        public string nome;
+        public decimal preco;
+
+        public Produto(string nome, decimal preco)
         {
-            this.Nome = nome;
-            this.Preco = preco;
+            this.nome = nome;
+            this.preco = preco;
         }
 
-        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
+        public override void AtualizarInformacoes(Produto produtoAtualizado)
         {
-            Produto produtoAtualizado = (Produto)registroAtualizado;
+            this.nome = produtoAtualizado.nome;
+            this.preco = produtoAtualizado.preco;
+        }
 
-            Nome = produtoAtualizado.Nome;
-            Preco = produtoAtualizado.Preco;
+        public override ArrayList Validar()
+        {
+            ArrayList erros = new ArrayList();
+
+            if (string.IsNullOrEmpty(nome.Trim()))
+            {
+                erros.Add("O campo \"Nome\" é obrigatorio");
+            }
+            if (preco == 0)
+            {
+                erros.Add("O campo \"Preço\" é obrigatorio");
+            }
+
+            return erros;
         }
     }
 }
